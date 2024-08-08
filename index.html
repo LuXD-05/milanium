@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Milanium</title>
     <style>
+        body {
+            overflow: hidden;
+        }
         #popup {
             position: absolute;
             display: flex;
@@ -42,8 +45,7 @@
         <p id="ppopup"></p>
     </div>
 
-    <canvas id="webgl" width="1920" height="696"
-        style="width: 1920px; height: 696px; touch-action: none; cursor: inherit;"></canvas>
+    <canvas id="webgl" width="1920" height="696"></canvas>
 
     <script type="module">
         import { Scene, PerspectiveCamera, WebGLRenderer, Mesh, BoxGeometry, MeshBasicMaterial, TextureLoader, CanvasTexture, Raycaster, Vector2 } from 'https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.module.js';
