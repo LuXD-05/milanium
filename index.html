@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E BULZ</title>
+    <style>
+        body {
+            overflow: hidden;
+        }
+        #popup {
+            position: absolute;
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            top: 25%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: min-content;
+            height: min-content;
+            /* border: 1px solid lightgray; */
+            background-color: whitesmoke;
+            margin: 0;
+            box-shadow: 0 0 10px 0 grey;
+            z-index: 99999;
+        }
+        #popup > *{
+            color: white;
+            font-size: 2em;
+            background-color: lightgreen;
+            white-space: pre;
+            padding: 16px 32px;
+            font-size: 1.3em;
+            font-family: system-ui;
+            font-weight: 600;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="popup" style="display: none;">
+        <p id="ppopup"></p>
+    </div>
+
+    <canvas id="webgl" width="1920" height="696"
+        style="width: 1920px; height: 696px; touch-action: none; cursor: inherit;"></canvas>
+
+    <script type="module">
+        import { Scene, PerspectiveCamera, WebGLRenderer, Mesh, BoxGeometry, MeshBasicMaterial, TextureLoader, CanvasTexture, Raycaster, Vector2 } from './node_modules/three/build/three.module.js';
+
+        const scene = new Scene();
+        const camera = new PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(0, 1.5, 4);
+        camera.lookAt(0, 0, 0);
+
+        const renderer = new WebGLRenderer({ canvas: document.getElementById('webgl') });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        scene.background = createImageTexture("./finally.jpg");
+
+        // Funzione per creare una texture con il testo "Ciao"
+        function createTextTexture(text) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 256;
+            canvas.height = 256;
+
+            // Imposta lo sfondo bianco
+            context.fillStyle = '#ffffff';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Imposta il colore del testo e la dimensione del font
+            context.fillStyle = '#000000';
+            context.font = '48px Arial';
+
+            // Allinea e centra il testo
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillText(text, canvas.width / 2, canvas.height / 2);
+
+            // Crea la texture
+            const texture = new CanvasTexture(canvas);
+            return texture;
+        }
+
+        function createImageTexture(imageURL) {
+            const loader = new TextureLoader();
+            const texture = loader.load(imageURL);
+            return texture;
+        }
+
+        // Crea sei materiali, uno per ogni faccia del cubo
+        const materials = [];
+        for (let i = 0; i < 6; i++) {
+            // materials.push(new MeshBasicMaterial({ map: createTextTexture('E BULZ') }));
+            materials.push(new MeshBasicMaterial({ map: createImageTexture('./gildown.jpeg') }));
+        }
+
+        // Crea il cubo con le sei facce personalizzate
+        const geometry = new BoxGeometry(1, 1, 1);
+        const cube = new Mesh(geometry, materials);
+        scene.add(cube);
+
+        // Raycaster per la gestione dei clic sugli oggetti
+        const raycaster = new Raycaster();
+        const mouse = new Vector2();
+
+        function onMouseClick(event) {
+            // Calcola la posizione del mouse in coordinate normalizzate
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            // Imposta il raycaster
+            raycaster.setFromCamera(mouse, camera);
+
+            // Controlla l'intersezione con il cubo
+            const intersects = raycaster.intersectObject(cube);
+
+            if (intersects.length > 0) {
+                document.getElementById("ppopup").innerText = "ME NE VADO";
+                document.getElementById("popup").style.display = "block";
+                setTimeout(() => { document.getElementById("popup").style.display = "none"; }, 2400);
+            }
+        }
+
+        window.addEventListener('click', onMouseClick, false);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            // cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+        });
+    </script>
+
+</body>
+
+</html>
